@@ -8,7 +8,7 @@ const models = [Task];
 
 // CRUCIAL: Determina o ambiente atual (vai ser 'production' no Render)
 const env = process.env.NODE_ENV || 'development'; 
-const currentConfig = databaseConfig[env]; // Acessa o bloco correto (development OU production)
+const currentConfig = databaseConfig[env]; 
 
 class Database {
     constructor() {
@@ -16,12 +16,13 @@ class Database {
 
         // VERIFICAÇÃO CONDICIONAL PARA O SEQUELIZE
         if (env === 'production') {
-            // Em produção, o Sequelize espera a URL de conexão completa.
-            // 'currentConfig.use_env_variable' aponta para 'DATABASE_URL'.
-            connectionInstance = new Sequelize(currentConfig.use_env_variable, currentConfig);
+            // CORREÇÃO FINAL: Usamos process.env.DATABASE_URL
+            const dbUrl = process.env.DATABASE_URL;
+
+            // O Sequelize em produção usa (URL, Objeto de Config)
+            connectionInstance = new Sequelize(dbUrl, currentConfig); 
         } else {
-            // Em desenvolvimento, usa o construtor padrão com variáveis separadas
-            // Usamos o database, username, password e o objeto de config
+            // Em desenvolvimento, usa (database, user, password, Config Object)
             connectionInstance = new Sequelize(
                 currentConfig.database, 
                 currentConfig.username, 
@@ -35,7 +36,6 @@ class Database {
     }
 
     init() {
-        // ... (Resto do método init, que faz a autenticação e inicia os modelos)
         models.forEach(model => model.init(this.connection));
         
         this.connection.authenticate()
@@ -44,7 +44,7 @@ class Database {
             })
             .catch(err => {
                 console.error("❌ ERRO: Falha ao conectar ao PostgreSQL.", err);
-                console.error("Erro na conexão! Verifique a DATABASE_URL e o bloco 'production' na sua config.");
+                console.error("Erro na conexão! Verifique a DATABASE_URL no Render e o código condicional.");
             });
     }
 }
