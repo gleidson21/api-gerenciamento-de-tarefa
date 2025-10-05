@@ -8,8 +8,8 @@
   "type": "module",
   "scripts": {
     "prestart": "node run-migrations.js",
-    "db:migrate": "node run-migrations.js",
-     "start": "node src/server.js",
+    "db:migrate": "npx sequelize-cli db:migrate",
+    "start": "node src/server.js",
     "dev": "node --watch src/server.js"
   },
   "dependencies": {
@@ -19,6 +19,7 @@
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.3",
     "yup": "^1.7.1"
   }
 }
