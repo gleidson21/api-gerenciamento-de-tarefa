@@ -1,7 +1,10 @@
 import 'dotenv/config';
 import { Sequelize } from 'sequelize';
 
-const mockConfig  = {
+const config = {
+  // --------------------------------------------------------
+  // 1. CONFIGURAÇÃO DE DESENVOLVIMENTO (USO LOCAL)
+  // --------------------------------------------------------
   development: {
     dialect: 'postgres',
     host: process.env.DB_HOST,
@@ -16,8 +19,36 @@ const mockConfig  = {
       underscored: true,
     },
     
-    logging: false, // Mude para 'true' se quiser ver o SQL gerado
+    logging: false, 
+  },
+
+  // --------------------------------------------------------
+  // 2. CONFIGURAÇÃO DE PRODUÇÃO (USO NO RENDER)
+  // --------------------------------------------------------
+  production: {
+    // A chave use_env_variable diz ao Sequelize para usar a string DATABASE_URL
+    use_env_variable: 'DATABASE_URL', 
+    
+    dialect: 'postgres',
+    
+    // Configuração OBRIGATÓRIA para bancos de dados hospedados (SSL/TLS)
+    dialectOptions: {
+      ssl: {
+        require: true,
+        // Necessário no Render para aceitar certificados
+        rejectUnauthorized: false
+      }
+    },
+    
+    // Configurações do Sequelize
+    define: {
+      timestamps: true, 
+      underscored: true,
+    },
+    
+    logging: false,
   },
 };
 
-export default mockConfig;
+// Exporta o objeto de configuração (para o sequelize-cli)
+export default config;
